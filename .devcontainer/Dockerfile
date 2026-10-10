@@ -26,3 +26,9 @@ RUN rm -f /etc/apt/sources.list.d/yarn.list \
 
 # No repository source or Python dependencies enter the build context.
 # ai-coding-cli 0.2.7 manages its own apt/npm downloads; it exposes no cache-mount options.
+
+# Codex uses bubblewrap for nested Linux filesystem isolation.
+ARG TARGETARCH
+RUN --mount=type=cache,id=llm-apt-bookworm-${TARGETARCH}-tuna-archives,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,id=llm-apt-bookworm-${TARGETARCH}-tuna-lists,target=/var/lib/apt/lists,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends bubblewrap

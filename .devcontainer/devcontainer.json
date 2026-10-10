@@ -1,6 +1,9 @@
 {
   "name": "llm-training (Python / PyTorch CPU)",
-  "build": { "dockerfile": "Dockerfile", "context": "." },
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
   "remoteUser": "vscode",
   "updateRemoteUserUID": false,
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/llm-training,type=bind,consistency=cached",
@@ -39,11 +42,19 @@
   "waitFor": "postStartCommand",
   "customizations": {
     "vscode": {
-      "extensions": ["ms-python.python", "ms-python.vscode-pylance", "ms-toolsai.jupyter"],
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-toolsai.jupyter"
+      ],
       "settings": {
         "python.defaultInterpreterPath": "/opt/venv/bin/python",
         "terminal.integrated.defaultProfile.linux": "bash"
       }
     }
-  }
+  },
+  "runArgs": [
+    "--security-opt",
+    "seccomp=unconfined"
+  ]
 }

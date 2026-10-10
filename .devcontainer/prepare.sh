@@ -56,4 +56,6 @@ fi
 # The Windows workspace is a host bind mount: check access without changing host ownership.
 probe=$(mktemp /workspaces/llm-training/.write-check.XXXXXX)
 rm -- "$probe"
+bash /workspaces/llm-training/.devcontainer/check-sandbox.sh
+
 printf '\nContainer ready. Install the locked Python environment with:\n  bash .devcontainer/setup.sh\n'

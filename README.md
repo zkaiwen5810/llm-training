@@ -50,3 +50,17 @@ AI state uses the same explicit volume names as other containers on this Docker 
 Claude's `~/.claude.json` is symlinked to a file in `.persist`; migration preserves existing content and backs up replaced files or symlinks. No credentials are stored in the repository or image. Volumes persist across rebuilds on the same Docker daemon; they do not synchronize between hosts.
 
 The container fixes `vscode` to UID:GID 1000:1000 and disables host UID remapping to match shared containers. Before readiness and on each start, `prepare.sh` repairs root-owned entries in the declared volumes, including descendants, checks writes as `vscode`, and rejects incompatible non-root owners. It checks the host workspace without recursively changing its ownership. On native Linux, ensure the bind mount is writable by UID 1000 or choose an agreed identity across all containers sharing these volumes.
+
+## Codex sandbox
+
+The Linux image installs Debian's `bubblewrap`. Docker's default seccomp profile blocks the namespace operations used by Codex on this Docker Desktop host, so this container specifies `--security-opt seccomp=unconfined`. This relaxes the outer Docker syscall filter; Codex still applies its own filesystem and network sandbox. It does not require privileged mode or extra capabilities on the tested host.
+
+Use `codex` normally. Container readiness runs `.devcontainer/check-sandbox.sh` as `vscode`, verifying workspace writes succeed while writes outside the workspace and network access fail. The check uses temporary Codex configuration so shared preferences cannot bypass it; it does not change your shared Codex settings. It needs no model request or login.
+
+After changing the container configuration, run **Dev Containers: Rebuild Container**. To repeat the check inside the container:
+
+```bash
+bash .devcontainer/check-sandbox.sh
+```
+
+The `claude-code-2_1_88` reference also has an explicit `codex-dfa` launcher that disables the inner sandbox. This repository fixes normal sandbox execution instead. See [OpenAI sandbox documentation](https://learn.chatgpt.com/docs/sandboxing) for the distinction between sandboxing and approvals.
