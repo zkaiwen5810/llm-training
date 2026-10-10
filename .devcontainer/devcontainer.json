@@ -1,0 +1,49 @@
+{
+  "name": "llm-training (Python / PyTorch CPU)",
+  "build": { "dockerfile": "Dockerfile", "context": "." },
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": false,
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/llm-training,type=bind,consistency=cached",
+  "workspaceFolder": "/workspaces/llm-training",
+  "features": {
+    "ghcr.io/zkaiwen5810/features/ai-coding-cli:0.2.7": {
+      "nodeMajor": "22",
+      "installZsh": false,
+      "installZshrc": false,
+      "installCc": true
+    }
+  },
+  "mounts": [
+    "source=uv-cache,target=/home/vscode/.cache/uv,type=volume",
+    "source=llm-training-py312-venv,target=/opt/venv,type=volume",
+    "source=codex-home,target=/home/vscode/.codex,type=volume",
+    "source=claude-home,target=/home/vscode/.claude,type=volume",
+    "source=claude-code-persist,target=/home/vscode/.persist,type=volume",
+    "source=opencode-config,target=/home/vscode/.config/opencode,type=volume",
+    "source=opencode-share,target=/home/vscode/.local/share/opencode,type=volume"
+  ],
+  "containerEnv": {
+    "UV_CACHE_DIR": "/home/vscode/.cache/uv",
+    "UV_PROJECT_ENVIRONMENT": "/opt/venv",
+    "UV_PYTHON_DOWNLOADS": "never",
+    "UV_LINK_MODE": "copy",
+    "PIP_INDEX_URL": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple",
+    "npm_config_registry": "https://registry.npmmirror.com"
+  },
+  "remoteEnv": {
+    "VIRTUAL_ENV": "/opt/venv",
+    "PATH": "/opt/venv/bin:${containerEnv:PATH}"
+  },
+  "postCreateCommand": "bash .devcontainer/prepare.sh",
+  "postStartCommand": "bash .devcontainer/prepare.sh",
+  "waitFor": "postStartCommand",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "ms-python.vscode-pylance", "ms-toolsai.jupyter"],
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/venv/bin/python",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
